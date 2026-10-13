@@ -23,6 +23,41 @@ Add to your `opencode.json`:
 }
 ```
 
+### OpenCode V2 (server plugins)
+
+V2 discovers plugins from the config `plugin` array (npm specs resolve through
+the package's `./server` export) or from local files in `.opencode/plugins/`
+(project) and `~/.config/opencode/plugins/` (global). This fork ships a V2 entry
+at `v2/server.ts` that reimplements the worktree workflow with the V2 API
+(`ctx.worktree`, `ctx.session`, `ctx.tool`); the root `server.ts` dispatches to
+it. Reference the package in the config:
+
+```json
+{
+  "plugin": ["@tmegit/opencode-worktree-session"]
+}
+```
+
+or, for a checkout, add a local file in `.opencode/plugins/` that re-exports
+`../../server.ts` — this repo dogfoods that setup.
+
+Differences from the V1 plugin:
+
+- No branch prompt: each new top-level session automatically gets a worktree
+  named from its session slug (opt out with `autoCreate: false`, or create one
+  on demand with the `createworktree` tool).
+- Worktrees are managed through the built-in V2 worktree service; only the
+  exit commit/push shells out to git (the V2 API has no commit).
+- Exit commit, matching V1: when a session ends (or `deleteworktree` runs),
+  pending changes are staged, committed as `chore(opencode): session snapshot`
+  and pushed to `origin` before the worktree is removed. If the commit or push
+  fails, the worktree is kept so nothing is lost. `autoCleanup: false` skips
+  the exit cleanup entirely, `forceRemove` forces removal, and the
+  `deleteworktree` tool moves the session back to the main checkout first
+  (its `force` input skips the commit and discards changes).
+- Uses the same config file, including `postWorktree` (settable at runtime with
+  the `setpostworktree` tool).
+
 ## Workflow
 
 1. **Start Session:** Run `opencode`.

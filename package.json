@@ -34,7 +34,9 @@
     ".": {
       "types": "./dist/opencode-worktree-session.d.ts",
       "default": "./dist/opencode-worktree-session.js"
-    }
+    },
+    "./server": "./server.ts",
+    "./v2/server": "./v2/server.ts"
   },
   "publishConfig": {
     "access": "public",
@@ -42,13 +44,16 @@
   },
   "files": [
     "dist",
-    ".opencode/plugin/src/version.ts"
+    "server.ts",
+    "v2",
+    "v1"
   ],
   "dependencies": {
     "@opencode-ai/plugin": "1.1.1"
   },
   "devDependencies": {
     "@eslint/js": "9.39.2",
+    "@opencode/plugin": "2.0.26",
     "@types/node": "22.19.3",
     "@typescript-eslint/eslint-plugin": "8.47.0",
     "@typescript-eslint/parser": "8.47.0",
